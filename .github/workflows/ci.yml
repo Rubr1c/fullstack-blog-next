@@ -38,7 +38,5 @@ jobs:
         run: npm ci
       - name: Generate Prisma client
         run: npm run postinstall
-      - name: Apply database migrations
-        run: npm run test:migrate
       - name: Run tests
         run: npm test
