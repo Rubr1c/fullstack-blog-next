@@ -20,7 +20,7 @@ export async function registerUser(data: CreateUserInput): Promise<UserDTO> {
   });
 
   return {
-    id: user.id,
+    id: user.id.toString(),
     email: user.email,
     username: user.username,
   };

@@ -1,5 +1,5 @@
 export type UserDTO = {
-  id: bigint;
+  id: string;
   email: string;
   username: string;
 };
