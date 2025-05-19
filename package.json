@@ -7,14 +7,14 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "dotenv -e .env.test -- prisma migrate deploy && dotenv -e .env.test -- jest",
+    "test": "npx dotenv-cli -e .env.test -- prisma migrate deploy && npx dotenv-cli -e .env.test -- jest",
     "postinstall": "prisma generate"
   },
   "jest": {
     "preset": "ts-jest",
     "testEnvironment": "node",
     "moduleNameMapper": {
-      "^@/lib/prisma$": "<rootDir>/__mocks__/prisma.ts",
+      "^@/lib/prisma$": "<rootDir>/src/lib/__mocks__/prisma.ts",
       "^@/(.*)$": "<rootDir>/src/$1"
     }
   },

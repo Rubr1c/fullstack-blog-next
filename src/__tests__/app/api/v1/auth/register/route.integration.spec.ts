@@ -1,5 +1,5 @@
 import { testApiHandler } from 'next-test-api-route-handler';
-import { POST as handler } from './route';
+import { POST as handler } from '@/app/api/v1/auth/register/route';
 import { CreateUserInput } from '@/schemas/user.schema';
 import { UserDTO } from '@/types/user';
 import { prisma } from '@/lib/prisma'; // Import the actual prisma client

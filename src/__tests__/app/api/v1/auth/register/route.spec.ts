@@ -1,9 +1,8 @@
 import { testApiHandler } from 'next-test-api-route-handler';
-import { POST as handler } from './route';
+import { POST as handler } from '@/app/api/v1/auth/register/route';
 import { registerUser } from '@/db/user/user.service';
 import { CreateUserInput } from '@/schemas/user.schema';
 import { UserDTO } from '@/types/user';
-
 
 jest.mock('@/db/user/user.service', () => ({
   registerUser: jest.fn(),

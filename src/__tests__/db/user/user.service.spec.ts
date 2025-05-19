@@ -1,14 +1,13 @@
-// src/db/user/user.service.spec.ts
 import { prisma } from '@/lib/prisma';
 import type { PrismaClient } from '@prisma/client';
 import { DeepMockProxy } from 'jest-mock-extended';
 import bcrypt from 'bcrypt';
-import { registerUser } from './user.service';
+import { registerUser } from '@/db/user/user.service';
 import { CreateUserInput } from '@/schemas/user.schema';
-import { getUserByEmail } from './user.repository';
+import { getUserByEmail } from '@/db/user/user.repository';
 import { UserDTO } from '@/types/user';
 
-jest.mock('./user.repository', () => ({
+jest.mock('@/db/user/user.repository', () => ({
   getUserByEmail: jest.fn(),
 }));
 
