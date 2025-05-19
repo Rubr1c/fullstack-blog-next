@@ -5,6 +5,7 @@ import { AuthenticatedUserDTO } from '@/types/user';
 import { prisma } from '@/lib/prisma';
 import bcrypt from 'bcrypt';
 import { verifyToken } from '@/lib/jwts'; // Import verifyToken to inspect JWT
+import { HttpStatus } from '@/lib/errors';
 
 // Helper to clean the database
 async function cleanDatabase() {
@@ -80,7 +81,7 @@ describe('POST /api/auth/login (Integration)', () => {
         });
         const json = await res.json();
 
-        expect(res.status).toBe(400);
+        expect(res.status).toBe(HttpStatus.UNAUTHORIZED);
         expect(json.error).toBe('Invalid password');
       },
     });
@@ -101,7 +102,7 @@ describe('POST /api/auth/login (Integration)', () => {
         });
         const json = await res.json();
 
-        expect(res.status).toBe(400);
+        expect(res.status).toBe(HttpStatus.NOT_FOUND);
         expect(json.error).toBe('User with email not found');
       },
     });
