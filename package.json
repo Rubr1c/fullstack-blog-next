@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "test": "npx dotenv-cli -e .env.test -- prisma migrate deploy && npx dotenv-cli -e .env.test -- jest",
+    "migrate:dev": "npx prisma migrate dev",
     "postinstall": "prisma generate"
   },
   "jest": {
@@ -29,6 +30,7 @@
     "bcrypt": "^6.0.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.509.0",
     "next": "15.3.2",
     "next-auth": "^4.24.11",
@@ -45,6 +47,7 @@
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
     "@types/jest": "^29.5.14",
+    "@types/jsonwebtoken": "^9.0.9",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

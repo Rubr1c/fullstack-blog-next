@@ -3,3 +3,9 @@ export type UserDTO = {
   email: string;
   username: string;
 };
+
+export type AuthenticatedUserDTO = {
+  token: string;
+  expiresIn: string;
+};
+
