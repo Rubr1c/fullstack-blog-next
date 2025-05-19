@@ -8,7 +8,7 @@ export async function POST(req: Request) {
     const json = await req.json();
     const data = loginUserSchema.parse(json);
     const user = await authenticateUser(data);
-    return NextResponse.json(user, { status: 201 });
+    return NextResponse.json(user, { status: 200 });
   } catch (err: unknown) {
     if (err instanceof ZodError) {
       return NextResponse.json({ errors: err.errors }, { status: 422 });
