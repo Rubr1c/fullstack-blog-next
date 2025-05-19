@@ -1,4 +1,4 @@
-import { CreateUserInput } from '@/schemas/user.schema';
+import { CreateUserInput, LoginUserInput } from '@/schemas/user.schema';
 import { prisma } from '@/lib/prisma';
 import bcrypt from 'bcrypt';
 import { getUserByEmail } from './user.repository';
@@ -28,7 +28,7 @@ export async function registerUser(data: CreateUserInput): Promise<UserDTO> {
 }
 
 export async function authenticateUser(
-  data: CreateUserInput
+  data: LoginUserInput
 ): Promise<AuthenticatedUserDTO> {
   const user = await getUserByEmail(data.email);
   if (!user) {
@@ -41,7 +41,7 @@ export async function authenticateUser(
 
   const expiresIn = process.env.NODE_ENV === 'production' ? '1h' : '1d';
 
-  const token = generateToken({ userId: user.id }, expiresIn);
+  const token = generateToken({ userId: user.id.toString() }, expiresIn);
 
   return {
     token,
