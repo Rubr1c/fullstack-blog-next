@@ -4,6 +4,7 @@ import { CreateUserInput } from '@/schemas/user.schema';
 import { UserDTO } from '@/types/user';
 import { prisma } from '@/lib/prisma'; // Import the actual prisma client
 import bcrypt from 'bcrypt';
+import { HttpStatus } from '@/lib/errors'; // Corrected HttpStatus import
 
 // Helper function to clean the database
 async function cleanDatabase() {
@@ -11,10 +12,29 @@ async function cleanDatabase() {
   await prisma.user.deleteMany();
 }
 
+// Define testUserCredentials for this test suite
+const testUserCredentials = {
+  email: 'register.integration@example.com',
+  username: 'reg_integ_user',
+  password: 'password123',
+};
+
 describe('POST /api/auth/register (Integration)', () => {
   beforeEach(async () => {
     await cleanDatabase();
   });
+
+  // Seed a user for the specific test that needs an existing user
+  async function seedUser(credentials: CreateUserInput) {
+    const hashedPassword = await bcrypt.hash(credentials.password, 10);
+    return prisma.user.create({
+      data: {
+        email: credentials.email,
+        username: credentials.username,
+        password: hashedPassword,
+      },
+    });
+  }
 
   afterAll(async () => {
     await cleanDatabase();
@@ -22,11 +42,7 @@ describe('POST /api/auth/register (Integration)', () => {
   });
 
   it('should register a user, store hashed password, and return 201 on success', async () => {
-    const validInput: CreateUserInput = {
-      email: 'integration@example.com',
-      username: 'integration_user',
-      password: 'password123',
-    };
+    const validInput: CreateUserInput = { ...testUserCredentials };
 
     await testApiHandler({
       appHandler: { POST: handler },
@@ -38,7 +54,7 @@ describe('POST /api/auth/register (Integration)', () => {
         const json: UserDTO = await res.json();
 
         // 1. Check API response
-        expect(res.status).toBe(201);
+        expect(res.status).toBe(HttpStatus.CREATED);
         expect(json.email).toEqual(validInput.email);
         expect(json.username).toEqual(validInput.username);
         expect(json.id).toBeDefined(); // ID should be a string (based on previous changes)
@@ -64,23 +80,14 @@ describe('POST /api/auth/register (Integration)', () => {
     });
   });
 
-  it('should return 400 if email already exists', async () => {
-    // 1. Seed the database with an existing user
-    const existingEmail = 'existing@example.com';
-    const hashedPassword = await bcrypt.hash('seedpassword', 10);
-    await prisma.user.create({
-      data: {
-        email: existingEmail,
-        username: 'existing_user',
-        password: hashedPassword,
-      },
-    });
+  it('should return 409 if email already exists', async () => {
+    // Seed the user first
+    await seedUser(testUserCredentials);
 
-    // 2. Attempt to register with the same email
     const input: CreateUserInput = {
-      email: existingEmail,
-      username: 'new_username',
-      password: 'newpassword123',
+      email: testUserCredentials.email, // Using the same email as the seeded user
+      username: 'another_user',
+      password: 'anotherpassword123',
     };
 
     await testApiHandler({
@@ -93,10 +100,10 @@ describe('POST /api/auth/register (Integration)', () => {
         const json = await res.json();
 
         // 3. Check API response
-        expect(res.status).toBe(400);
+        expect(res.status).toBe(HttpStatus.CONFLICT); // Expect 409 Conflict
         expect(json.error).toBe('User with email already exists');
 
-        // 4. Verify no new user was created (optional, count check)
+        // 4. Verify no new user was created (count should remain 1 from beforeAll)
         const userCount = await prisma.user.count();
         expect(userCount).toBe(1);
       },

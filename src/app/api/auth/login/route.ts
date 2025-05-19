@@ -10,11 +10,20 @@ export async function POST(req: Request) {
     const json = await req.json();
     const data = loginUserSchema.parse(json);
     const user = await authenticateUser(data);
+    let loggedUserId = 'unknown';
+    if (user.token && user.token.split('.').length === 3) {
+      try {
+        loggedUserId = JSON.parse(atob(user.token.split('.')[1])).userId;
+      } catch {
+        // If parsing fails (e.g. mock token in test), log that it was a mock or unparsable
+        logger.warn('Could not parse userId from token for logging', {
+          token: user.token,
+        });
+      }
+    }
     logger.info('User successfully authenticated', {
       email: data.email,
-      userId: user.token
-        ? JSON.parse(atob(user.token.split('.')[1])).userId
-        : 'unknown',
+      userId: loggedUserId,
     });
     return NextResponse.json(user, { status: HttpStatus.OK });
   } catch (err: unknown) {

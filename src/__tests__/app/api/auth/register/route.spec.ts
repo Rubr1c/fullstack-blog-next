@@ -3,6 +3,7 @@ import { POST as handler } from '@/app/api/auth/register/route';
 import { registerUser } from '@/db/user/user.service';
 import { CreateUserInput } from '@/schemas/user.schema';
 import { UserDTO } from '@/types/user';
+import { HttpError, HttpStatus } from '@/lib/errors';
 
 jest.mock('@/db/user/user.service', () => ({
   registerUser: jest.fn(),
@@ -40,7 +41,7 @@ describe('POST /api/auth/register', () => {
         });
         const json = await res.json();
 
-        expect(res.status).toBe(201);
+        expect(res.status).toBe(HttpStatus.CREATED);
         expect(json.email).toEqual(mockUserResponse.email);
         expect(json.username).toEqual(mockUserResponse.username);
         expect(json.id).toEqual(mockUserResponse.id);
@@ -61,7 +62,7 @@ describe('POST /api/auth/register', () => {
         });
         const json = await res.json();
 
-        expect(res.status).toBe(422);
+        expect(res.status).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
         expect(json.errors).toBeDefined();
         expect(json.errors).toBeInstanceOf(Array);
         expect(
@@ -79,14 +80,16 @@ describe('POST /api/auth/register', () => {
     });
   });
 
-  it('should return 400 if registration service throws an error', async () => {
+  it('should return correct status if registration service throws HttpError (e.g., user exists)', async () => {
     const validInput: CreateUserInput = {
       email: 'test@example.com',
       username: 'testuser',
       password: 'password123',
     };
     const errorMessage = 'User with email already exists';
-    mockedRegisterUser.mockRejectedValue(new Error(errorMessage));
+    mockedRegisterUser.mockRejectedValue(
+      new HttpError(errorMessage, HttpStatus.CONFLICT)
+    );
 
     await testApiHandler({
       appHandler: { POST: handler },
@@ -97,14 +100,14 @@ describe('POST /api/auth/register', () => {
         });
         const json = await res.json();
 
-        expect(res.status).toBe(400);
+        expect(res.status).toBe(HttpStatus.CONFLICT);
         expect(json.error).toBe(errorMessage);
         expect(mockedRegisterUser).toHaveBeenCalledWith(validInput);
       },
     });
   });
 
-  it('should return 400 for non-Zod and non-Error exceptions from service', async () => {
+  it('should return 500 for non-HttpError and non-ZodError exceptions from service', async () => {
     const validInput: CreateUserInput = {
       email: 'test@example.com',
       username: 'testuser',
@@ -121,8 +124,8 @@ describe('POST /api/auth/register', () => {
         });
         const json = await res.json();
 
-        expect(res.status).toBe(400);
-        expect(json.error).toBe('An unknown error occurred');
+        expect(res.status).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
+        expect(json.error).toBe('An internal server error occurred');
         expect(mockedRegisterUser).toHaveBeenCalledWith(validInput);
       },
     });
