@@ -1,5 +1,5 @@
 import { testApiHandler } from 'next-test-api-route-handler';
-import { POST as handler } from '@/app/api/v1/auth/register/route';
+import { POST as handler } from '@/app/api/auth/register/route';
 import { CreateUserInput } from '@/schemas/user.schema';
 import { UserDTO } from '@/types/user';
 import { prisma } from '@/lib/prisma'; // Import the actual prisma client
@@ -11,7 +11,7 @@ async function cleanDatabase() {
   await prisma.user.deleteMany();
 }
 
-describe('POST /api/v1/auth/register (Integration)', () => {
+describe('POST /api/auth/register (Integration)', () => {
   beforeEach(async () => {
     await cleanDatabase();
   });

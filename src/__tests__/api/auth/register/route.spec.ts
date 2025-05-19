@@ -1,5 +1,5 @@
 import { testApiHandler } from 'next-test-api-route-handler';
-import { POST as handler } from '@/app/api/v1/auth/register/route';
+import { POST as handler } from '@/app/api/auth/register/route';
 import { registerUser } from '@/db/user/user.service';
 import { CreateUserInput } from '@/schemas/user.schema';
 import { UserDTO } from '@/types/user';
@@ -12,7 +12,7 @@ const mockedRegisterUser = registerUser as jest.MockedFunction<
   typeof registerUser
 >;
 
-describe('POST /api/v1/auth/register', () => {
+describe('POST /api/auth/register', () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
