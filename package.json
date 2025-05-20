@@ -8,8 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "test": "npx dotenv-cli -e .env.test -- prisma migrate deploy && npx dotenv-cli -e .env.test -- jest",
-    "migrate:dev": "npx prisma migrate dev",
-    "postinstall": "prisma generate"
+    "migrate:dev": "npx prisma migrate dev && npx prisma generate",
+    "postinstall": "npx prisma generate"
   },
   "jest": {
     "preset": "ts-jest",

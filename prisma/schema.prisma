@@ -9,10 +9,46 @@ datasource db {
 }
 
 model User {
-  id        BigInt   @id() @default(autoincrement())
+  id        BigInt   @id @default(autoincrement())
   email     String   @unique
   username  String
   password  String
   pfp       String?
   createdAt DateTime @default(now())
+
+  posts    Post[]
+  comments Comment[]
+}
+
+model Post {
+  id        String    @id @default(cuid())
+  title     String
+  slug      String    @unique
+  content   String
+  author    User      @relation(fields: [authorId], references: [id])
+  authorId  BigInt
+  comments  Comment[]
+  media     Media[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  content   String
+  author    User     @relation(fields: [authorId], references: [id])
+  authorId  BigInt
+  post      Post     @relation(fields: [postId], references: [id])
+  postId    String
+  createdAt DateTime @default(now())
+}
+
+model Media {
+  id         String   @id @default(cuid())
+  url        String
+  caption    String?
+  position   Int
+  post       Post     @relation(fields: [postId], references: [id])
+  postId     String
+  uploadedAt DateTime @default(now())
 }
