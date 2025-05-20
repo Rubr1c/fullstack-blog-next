@@ -10,10 +10,7 @@ export interface CommentDTO {
 
 export function createCommentDto(comment: Comment): CommentDTO {
   return {
-    id: comment.id,
-    content: comment.content,
+    ...comment,
     authorId: comment.authorId.toString(),
-    postId: comment.postId,
-    createdAt: comment.createdAt,
   };
 }

@@ -11,11 +11,6 @@ export interface MediaDTO {
 
 export function createMediaDto(media: Media): MediaDTO {
   return {
-    id: media.id,
-    url: media.url,
-    caption: media.caption ?? null,
-    position: media.position,
-    postId: media.postId,
-    uploadedAt: media.uploadedAt,
+    ...media,
   };
 }
