@@ -2,7 +2,7 @@ import { CreateUserInput, LoginUserInput } from '@/schemas/user.schema';
 import { prisma } from '@/lib/prisma';
 import bcrypt from 'bcrypt';
 import { getUserByEmail } from './user.repository';
-import { AuthenticatedUserDTO, UserDTO } from '@/types/user';
+import type { AuthenticatedUserDTO, UserDTO } from '@/types/user.types';
 import { generateToken } from '@/lib/jwts';
 import { HttpError, HttpStatus } from '@/lib/errors';
 

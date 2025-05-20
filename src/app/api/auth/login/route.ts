@@ -15,7 +15,6 @@ export async function POST(req: Request) {
       try {
         loggedUserId = JSON.parse(atob(user.token.split('.')[1])).userId;
       } catch {
-        // If parsing fails (e.g. mock token in test), log that it was a mock or unparsable
         logger.warn('Could not parse userId from token for logging', {
           token: user.token,
         });

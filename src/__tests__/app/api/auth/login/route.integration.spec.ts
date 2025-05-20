@@ -1,7 +1,7 @@
 import { testApiHandler } from 'next-test-api-route-handler';
 import { POST as handler } from '@/app/api/auth/login/route';
 import { LoginUserInput } from '@/schemas/user.schema';
-import { AuthenticatedUserDTO } from '@/types/user';
+import { AuthenticatedUserDTO } from '@/types/user.types';
 import { prisma } from '@/lib/prisma';
 import bcrypt from 'bcrypt';
 import { verifyToken } from '@/lib/jwts'; // Import verifyToken to inspect JWT

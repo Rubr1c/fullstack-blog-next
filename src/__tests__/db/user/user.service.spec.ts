@@ -5,7 +5,7 @@ import bcrypt from 'bcrypt';
 import { registerUser } from '@/db/user/user.service';
 import { CreateUserInput } from '@/schemas/user.schema';
 import { getUserByEmail } from '@/db/user/user.repository';
-import { UserDTO } from '@/types/user';
+import { UserDTO } from '@/types/user.types';
 
 jest.mock('@/db/user/user.repository', () => ({
   getUserByEmail: jest.fn(),
