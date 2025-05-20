@@ -6,7 +6,7 @@ import {
   updateExistingMediaItem,
   removeMediaItem,
 } from '@/db/media/media.service';
-import { HttpError } from '@/lib/errors';
+import { HttpError, HttpStatus } from '@/lib/errors';
 import { logger } from '@/lib/logger';
 
 interface MediaRouteParams {
@@ -30,7 +30,7 @@ export async function GET(request: Request, { params }: MediaRouteParams) {
     }
     return NextResponse.json(
       { message: 'Error fetching media item' },
-      { status: 500 }
+      { status: HttpStatus.INTERNAL_SERVER_ERROR }
     );
   }
 }
@@ -40,7 +40,10 @@ export async function PUT(request: Request, { params }: MediaRouteParams) {
   try {
     const token = request.headers.get('Authorization')?.split(' ')[1];
     if (!token) {
-      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json(
+        { message: 'Unauthorized' },
+        { status: HttpStatus.UNAUTHORIZED }
+      );
     }
     const { userId } = verifyToken(token);
 
@@ -50,7 +53,7 @@ export async function PUT(request: Request, { params }: MediaRouteParams) {
     if (!validation.success) {
       return NextResponse.json(
         { message: 'Invalid input', errors: validation.error.format() },
-        { status: 400 }
+        { status: HttpStatus.BAD_REQUEST }
       );
     }
 
@@ -70,7 +73,7 @@ export async function PUT(request: Request, { params }: MediaRouteParams) {
     }
     return NextResponse.json(
       { message: 'Error updating media item' },
-      { status: 500 }
+      { status: HttpStatus.INTERNAL_SERVER_ERROR }
     );
   }
 }
@@ -80,12 +83,15 @@ export async function DELETE(request: Request, { params }: MediaRouteParams) {
   try {
     const token = request.headers.get('Authorization')?.split(' ')[1];
     if (!token) {
-      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json(
+        { message: 'Unauthorized' },
+        { status: HttpStatus.UNAUTHORIZED }
+      );
     }
     const { userId } = verifyToken(token);
 
     const deletedMedia = await removeMediaItem(params.mediaId, BigInt(userId));
-    return NextResponse.json(deletedMedia);
+    return NextResponse.json(deletedMedia, { status: HttpStatus.OK });
   } catch (error) {
     logger.error('DELETE /api/media/[mediaId] error:', error);
     if (error instanceof HttpError) {
@@ -96,7 +102,7 @@ export async function DELETE(request: Request, { params }: MediaRouteParams) {
     }
     return NextResponse.json(
       { message: 'Error deleting media item' },
-      { status: 500 }
+      { status: HttpStatus.INTERNAL_SERVER_ERROR }
     );
   }
 }

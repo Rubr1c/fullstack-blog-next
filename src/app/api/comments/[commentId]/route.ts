@@ -6,7 +6,7 @@ import {
   updateExistingComment,
   removeComment,
 } from '@/db/comment/comment.service';
-import { HttpError } from '@/lib/errors';
+import { HttpError, HttpStatus } from '@/lib/errors';
 import { logger } from '@/lib/logger';
 
 interface CommentRouteParams {
@@ -30,7 +30,7 @@ export async function GET(request: Request, { params }: CommentRouteParams) {
     }
     return NextResponse.json(
       { message: 'Error fetching comment' },
-      { status: 500 }
+      { status: HttpStatus.INTERNAL_SERVER_ERROR }
     );
   }
 }
@@ -40,7 +40,10 @@ export async function PUT(request: Request, { params }: CommentRouteParams) {
   try {
     const token = request.headers.get('Authorization')?.split(' ')[1];
     if (!token) {
-      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json(
+        { message: 'Unauthorized' },
+        { status: HttpStatus.UNAUTHORIZED }
+      );
     }
     const { userId } = verifyToken(token);
 
@@ -50,7 +53,7 @@ export async function PUT(request: Request, { params }: CommentRouteParams) {
     if (!validation.success) {
       return NextResponse.json(
         { message: 'Invalid input', errors: validation.error.format() },
-        { status: 400 }
+        { status: HttpStatus.BAD_REQUEST }
       );
     }
 
@@ -70,7 +73,7 @@ export async function PUT(request: Request, { params }: CommentRouteParams) {
     }
     return NextResponse.json(
       { message: 'Error updating comment' },
-      { status: 500 }
+      { status: HttpStatus.INTERNAL_SERVER_ERROR }
     );
   }
 }
@@ -80,7 +83,10 @@ export async function DELETE(request: Request, { params }: CommentRouteParams) {
   try {
     const token = request.headers.get('Authorization')?.split(' ')[1];
     if (!token) {
-      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json(
+        { message: 'Unauthorized' },
+        { status: HttpStatus.UNAUTHORIZED }
+      );
     }
     const { userId } = verifyToken(token);
 
@@ -88,7 +94,7 @@ export async function DELETE(request: Request, { params }: CommentRouteParams) {
       params.commentId,
       BigInt(userId)
     );
-    return NextResponse.json(deletedComment);
+    return NextResponse.json(deletedComment, { status: HttpStatus.OK });
   } catch (error) {
     logger.error('DELETE /api/comments/[commentId] error:', error);
     if (error instanceof HttpError) {
@@ -99,7 +105,7 @@ export async function DELETE(request: Request, { params }: CommentRouteParams) {
     }
     return NextResponse.json(
       { message: 'Error deleting comment' },
-      { status: 500 }
+      { status: HttpStatus.INTERNAL_SERVER_ERROR }
     );
   }
 }

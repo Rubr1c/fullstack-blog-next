@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { verifyToken } from '@/lib/jwts';
 import { CreateMediaSchema } from '@/schemas/media.schema';
 import { addMediaToPost, fetchMediaForPost } from '@/db/media/media.service';
-import { HttpError } from '@/lib/errors';
+import { HttpError, HttpStatus } from '@/lib/errors';
 import { logger } from '@/lib/logger';
 
 interface PostMediaRouteParams {
@@ -16,7 +16,10 @@ export async function POST(request: Request, { params }: PostMediaRouteParams) {
   try {
     const token = request.headers.get('Authorization')?.split(' ')[1];
     if (!token) {
-      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json(
+        { message: 'Unauthorized' },
+        { status: HttpStatus.UNAUTHORIZED }
+      );
     }
     const { userId } = verifyToken(token);
 
@@ -29,12 +32,12 @@ export async function POST(request: Request, { params }: PostMediaRouteParams) {
     if (!validation.success) {
       return NextResponse.json(
         { message: 'Invalid input', errors: validation.error.format() },
-        { status: 400 }
+        { status: HttpStatus.BAD_REQUEST }
       );
     }
 
     const media = await addMediaToPost(validation.data, BigInt(userId));
-    return NextResponse.json(media, { status: 201 });
+    return NextResponse.json(media, { status: HttpStatus.CREATED });
   } catch (error) {
     logger.error('POST /api/posts/[postId]/media error:', error);
     if (error instanceof HttpError) {
@@ -45,7 +48,7 @@ export async function POST(request: Request, { params }: PostMediaRouteParams) {
     }
     return NextResponse.json(
       { message: 'Error adding media to post' },
-      { status: 500 }
+      { status: HttpStatus.INTERNAL_SERVER_ERROR }
     );
   }
 }
@@ -65,7 +68,7 @@ export async function GET(request: Request, { params }: PostMediaRouteParams) {
     }
     return NextResponse.json(
       { message: 'Error fetching media for post' },
-      { status: 500 }
+      { status: HttpStatus.INTERNAL_SERVER_ERROR }
     );
   }
 }

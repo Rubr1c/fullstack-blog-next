@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { fetchPostBySlug } from '@/db/post/post.service';
-import { HttpError } from '@/lib/errors';
+import { HttpError, HttpStatus } from '@/lib/errors';
 import { logger } from '@/lib/logger';
 
 interface PostSlugRouteParams {
@@ -24,7 +24,7 @@ export async function GET(request: Request, { params }: PostSlugRouteParams) {
     }
     return NextResponse.json(
       { message: 'Error fetching post by slug' },
-      { status: 500 }
+      { status: HttpStatus.INTERNAL_SERVER_ERROR }
     );
   }
 }

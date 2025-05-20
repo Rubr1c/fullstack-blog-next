@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { verifyToken } from '@/lib/jwts';
 import { updatePostSchema } from '@/schemas/post.schema';
 import { fetchPostById, updatePost, deletePost } from '@/db/post/post.service';
-import { HttpError } from '@/lib/errors';
+import { HttpError, HttpStatus } from '@/lib/errors';
 import { logger } from '@/lib/logger';
 
 interface PostRouteParams {
@@ -26,7 +26,7 @@ export async function GET(request: Request, { params }: PostRouteParams) {
     }
     return NextResponse.json(
       { message: 'Error fetching post' },
-      { status: 500 }
+      { status: HttpStatus.INTERNAL_SERVER_ERROR }
     );
   }
 }
@@ -36,7 +36,10 @@ export async function PUT(request: Request, { params }: PostRouteParams) {
   try {
     const token = request.headers.get('Authorization')?.split(' ')[1];
     if (!token) {
-      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json(
+        { message: 'Unauthorized' },
+        { status: HttpStatus.UNAUTHORIZED }
+      );
     }
     const { userId } = verifyToken(token);
 
@@ -46,7 +49,7 @@ export async function PUT(request: Request, { params }: PostRouteParams) {
     if (!validation.success) {
       return NextResponse.json(
         { message: 'Invalid input', errors: validation.error.format() },
-        { status: 400 }
+        { status: HttpStatus.BAD_REQUEST }
       );
     }
 
@@ -66,7 +69,7 @@ export async function PUT(request: Request, { params }: PostRouteParams) {
     }
     return NextResponse.json(
       { message: 'Error updating post' },
-      { status: 500 }
+      { status: HttpStatus.INTERNAL_SERVER_ERROR }
     );
   }
 }
@@ -76,7 +79,10 @@ export async function DELETE(request: Request, { params }: PostRouteParams) {
   try {
     const token = request.headers.get('Authorization')?.split(' ')[1];
     if (!token) {
-      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json(
+        { message: 'Unauthorized' },
+        { status: HttpStatus.UNAUTHORIZED }
+      );
     }
     const { userId } = verifyToken(token);
 
@@ -92,7 +98,7 @@ export async function DELETE(request: Request, { params }: PostRouteParams) {
     }
     return NextResponse.json(
       { message: 'Error deleting post' },
-      { status: 500 }
+      { status: HttpStatus.INTERNAL_SERVER_ERROR }
     );
   }
 }
