@@ -82,7 +82,7 @@ describe('POST /api/auth/login (Integration)', () => {
         const json = await res.json();
 
         expect(res.status).toBe(HttpStatus.UNAUTHORIZED);
-        expect(json.error).toBe('Invalid password');
+        expect(json.error).toBe('Invalid credentials: Incorrect password.');
       },
     });
   });
@@ -103,7 +103,9 @@ describe('POST /api/auth/login (Integration)', () => {
         const json = await res.json();
 
         expect(res.status).toBe(HttpStatus.NOT_FOUND);
-        expect(json.error).toBe('User with email not found');
+        expect(json.error).toBe(
+          'Invalid credentials: User with this email does not exist.'
+        );
       },
     });
   });
