@@ -34,11 +34,17 @@ export async function authenticateUser(
 ): Promise<AuthenticatedUserDTO> {
   const user = await getUserByEmail(data.email);
   if (!user) {
-    throw new HttpError('User with email not found', HttpStatus.NOT_FOUND);
+    throw new HttpError(
+      'Invalid credentials: User with this email does not exist.',
+      HttpStatus.NOT_FOUND
+    );
   }
   const isPasswordValid = await bcrypt.compare(data.password, user.password);
   if (!isPasswordValid) {
-    throw new HttpError('Invalid password', HttpStatus.UNAUTHORIZED);
+    throw new HttpError(
+      'Invalid credentials: Incorrect password.',
+      HttpStatus.UNAUTHORIZED
+    );
   }
 
   const expiresIn = process.env.NODE_ENV === 'production' ? '1h' : '1d';
@@ -47,13 +53,17 @@ export async function authenticateUser(
 
   return {
     token,
-    expiresIn: expiresIn,
+    expiresIn,
   };
 }
 
 export async function getUserFromToken(token: string): Promise<User> {
   const { userId } = verifyToken(token);
   const user = await getUserById(BigInt(userId));
-  if (!user) throw new HttpError('User not found', HttpStatus.NOT_FOUND);
+  if (!user)
+    throw new HttpError(
+      'Invalid token: User associated with this token not found.',
+      HttpStatus.NOT_FOUND
+    );
   return user;
 }
