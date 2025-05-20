@@ -1,59 +1,33 @@
-import winston, { Logform } from 'winston';
+// A simple logger example
+// In a real app, you might use a library like Winston or Pino
 
-const { combine, timestamp, printf, colorize } = winston.format;
+enum LogLevel {
+  ERROR = 'ERROR',
+  WARN = 'WARN',
+  INFO = 'INFO',
+  DEBUG = 'DEBUG',
+}
 
-const consoleLogFormat = printf(
-  ({ level, message, timestamp: ts, stack }: Logform.TransformableInfo) => {
-    return `${ts} ${level}: ${stack || message}`;
+function log(level: LogLevel, message: string, ...args: unknown[]) {
+  const timestamp = new Date().toISOString();
+  // In a server environment, you might prefer console.error for errors
+  // or integrate with a proper logging service.
+  if (level === LogLevel.ERROR) {
+    console.error(`[${timestamp}] [${level}] ${message}`, ...args);
+  } else if (level === LogLevel.WARN) {
+    console.warn(`[${timestamp}] [${level}] ${message}`, ...args);
+  } else {
+    console.log(`[${timestamp}] [${level}] ${message}`, ...args);
   }
-);
-
-const transports: winston.transport[] = [];
-
-const nodeEnv = process.env.NODE_ENV || 'development';
-const logLevel =
-  process.env.LOG_LEVEL || (nodeEnv === 'production' ? 'info' : 'debug');
-
-if (nodeEnv === 'test') {
-  transports.push(new winston.transports.Console({ silent: true }));
-} else if (nodeEnv === 'production') {
-  transports.push(
-    new winston.transports.Console({
-      format: combine(
-        timestamp(),
-        winston.format.errors({ stack: true }),
-        winston.format.json()
-      ),
-    })
-  );
-} else {
-  transports.push(
-    new winston.transports.Console({
-      format: combine(
-        colorize(),
-        timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
-        consoleLogFormat
-      ),
-    })
-  );
 }
 
-const logger = winston.createLogger({
-  level: logLevel,
-  format: combine(
-    timestamp(),
-    winston.format.errors({ stack: true }),
-    winston.format.splat(),
-    winston.format.json()
-  ),
-  transports: transports,
-  exitOnError: false,
-});
-
-if (nodeEnv === 'test') {
-  logger.transports.forEach((t: winston.transport) => {
-    t.silent = true;
-  });
-}
-
-export default logger;
+export const logger = {
+  error: (message: string, ...args: unknown[]) =>
+    log(LogLevel.ERROR, message, ...args),
+  warn: (message: string, ...args: unknown[]) =>
+    log(LogLevel.WARN, message, ...args),
+  info: (message: string, ...args: unknown[]) =>
+    log(LogLevel.INFO, message, ...args),
+  debug: (message: string, ...args: unknown[]) =>
+    log(LogLevel.DEBUG, message, ...args),
+};

@@ -3,7 +3,7 @@ import { HttpError, HttpStatus } from '@/lib/errors';
 import { loginUserSchema } from '@/schemas/user.schema';
 import { NextResponse } from 'next/server';
 import { ZodError } from 'zod';
-import logger from '@/lib/logger';
+import { logger } from '@/lib/logger';
 
 export async function POST(req: Request) {
   try {
