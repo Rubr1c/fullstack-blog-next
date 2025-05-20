@@ -25,6 +25,7 @@ model Post {
   title     String
   slug      String    @unique
   content   String
+  published Boolean   @default(false)
   author    User      @relation(fields: [authorId], references: [id])
   authorId  BigInt
   comments  Comment[]

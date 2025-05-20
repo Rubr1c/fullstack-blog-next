@@ -1,9 +1,8 @@
 import { NextResponse } from 'next/server';
-// import { verifyToken } from '@/lib/jwts'; // verifyToken is not used here as createPost expects the token
-import { createPostSchema } from '@/schemas/post.schema'; // Corrected import name
-import { createPost, fetchPosts } from '@/db/post/post.service'; // Named imports
-import { HttpError, HttpStatus } from '@/lib/errors'; // Ensure HttpStatus is imported
-import { logger } from '@/lib/logger'; // Import logger
+import { createPostSchema } from '@/schemas/post.schema';
+import { createPost, fetchPosts } from '@/db/post/post.service';
+import { HttpError, HttpStatus } from '@/lib/errors';
+import { logger } from '@/lib/logger';
 
 // Create a new post
 export async function POST(request: Request) {
