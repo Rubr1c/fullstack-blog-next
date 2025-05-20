@@ -1,10 +1,11 @@
 import { CreateUserInput, LoginUserInput } from '@/schemas/user.schema';
 import { prisma } from '@/lib/prisma';
 import bcrypt from 'bcrypt';
-import { getUserByEmail } from '../user/user.repository';
+import { getUserByEmail, getUserById } from '../user/user.repository';
 import type { AuthenticatedUserDTO, UserDTO } from '@/types/user.types';
-import { generateToken } from '@/lib/jwts';
+import { generateToken, verifyToken } from '@/lib/jwts';
 import { HttpError, HttpStatus } from '@/lib/errors';
+import { User } from '@/generated/prisma';
 
 export async function registerUser(data: CreateUserInput): Promise<UserDTO> {
   if (await getUserByEmail(data.email)) {
@@ -48,4 +49,11 @@ export async function authenticateUser(
     token,
     expiresIn: expiresIn,
   };
+}
+
+export async function getUserFromToken(token: string): Promise<User> {
+  const { userId } = verifyToken(token);
+  const user = await getUserById(BigInt(userId));
+  if (!user) throw new HttpError('User not found', HttpStatus.NOT_FOUND);
+  return user;
 }
