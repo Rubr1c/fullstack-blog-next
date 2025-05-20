@@ -35,7 +35,7 @@ export async function fetchPostById(id: string): Promise<PostDTO> {
   return createPostDto(post);
 }
 
-export async function getPosts(
+export async function fetchPosts(
   page: number,
   pageSize: number
 ): Promise<PostDTO[]> {
