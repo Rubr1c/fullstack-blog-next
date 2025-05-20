@@ -28,3 +28,16 @@ export async function updateUser(
     email: user.email,
   };
 }
+
+export async function deleteUser(userId: string): Promise<void> {
+  const existingUser = await getUserById(BigInt(userId));
+
+  if (!existingUser) {
+    throw new HttpError(
+      `User with id ${userId} not found`,
+      HttpStatus.NOT_FOUND
+    );
+  }
+  //TODO: delete colerated data
+  await prisma.user.delete({ where: { id: BigInt(userId) } });
+}
