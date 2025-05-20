@@ -1,4 +1,4 @@
-import { authenticateUser } from '@/db/user/user.service';
+import { authenticateUser } from '@/db/auth/auth.service';
 import { HttpError, HttpStatus } from '@/lib/errors';
 import { loginUserSchema } from '@/schemas/user.schema';
 import { NextResponse } from 'next/server';

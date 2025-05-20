@@ -1,11 +1,11 @@
 import { testApiHandler } from 'next-test-api-route-handler';
 import { POST as handler } from '@/app/api/auth/login/route';
-import { authenticateUser } from '@/db/user/user.service';
+import { authenticateUser } from '@/db/auth/auth.service';
 import { LoginUserInput } from '@/schemas/user.schema';
 import { AuthenticatedUserDTO } from '@/types/user.types';
 import { HttpError, HttpStatus } from '@/lib/errors';
 
-jest.mock('@/db/user/user.service', () => ({
+jest.mock('@/db/auth/auth.service', () => ({
   authenticateUser: jest.fn(),
 }));
 

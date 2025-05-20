@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createUserSchema } from '@/schemas/user.schema';
-import { registerUser } from '@/db/user/user.service';
+import { registerUser } from '@/db/auth/auth.service';
 import { ZodError } from 'zod';
 import logger from '@/lib/logger';
 import { HttpError, HttpStatus } from '@/lib/errors';

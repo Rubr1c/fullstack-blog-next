@@ -2,7 +2,7 @@ import { prisma } from '@/lib/prisma';
 import type { PrismaClient } from '@prisma/client';
 import { DeepMockProxy } from 'jest-mock-extended';
 import bcrypt from 'bcrypt';
-import { registerUser } from '@/db/user/user.service';
+import { registerUser } from '@/db/auth/auth.service';
 import { CreateUserInput } from '@/schemas/user.schema';
 import { getUserByEmail } from '@/db/user/user.repository';
 import { UserDTO } from '@/types/user.types';
