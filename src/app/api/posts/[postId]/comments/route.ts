@@ -20,6 +20,7 @@ export async function POST(
   { params }: PostCommentsRouteParams
 ) {
   try {
+    const { postId } = await params;
     const token = request.headers.get('Authorization')?.split(' ')[1];
     if (!token) {
       return NextResponse.json(
@@ -32,7 +33,7 @@ export async function POST(
     const body = await request.json();
     const validation = CreateCommentSchema.safeParse({
       ...body,
-      postId: params.postId,
+      postId: postId,
     });
 
     if (!validation.success) {
@@ -65,6 +66,7 @@ export async function GET(
   { params }: PostCommentsRouteParams
 ) {
   try {
+    const { postId } = await params;
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get('page') || '1', 10);
     const pageSize = parseInt(searchParams.get('pageSize') || '10', 10);
@@ -76,7 +78,7 @@ export async function GET(
       );
     }
 
-    const comments = await fetchCommentsByPost(params.postId, page, pageSize);
+    const comments = await fetchCommentsByPost(postId, page, pageSize);
     return NextResponse.json(comments);
   } catch (error) {
     logger.error('GET /api/posts/[postId]/comments error:', error);

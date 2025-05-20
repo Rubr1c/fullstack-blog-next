@@ -12,7 +12,8 @@ interface PostSlugRouteParams {
 // Get Post by Slug
 export async function GET(request: Request, { params }: PostSlugRouteParams) {
   try {
-    const post = await fetchPostBySlug(params.slug);
+    const { slug } = await params;
+    const post = await fetchPostBySlug(slug);
     return NextResponse.json(post);
   } catch (error) {
     logger.error('GET /api/posts/slug/[slug] error:', error);

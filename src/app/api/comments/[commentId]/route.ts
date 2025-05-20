@@ -18,7 +18,8 @@ interface CommentRouteParams {
 // Get Comment by ID
 export async function GET(request: Request, { params }: CommentRouteParams) {
   try {
-    const comment = await fetchCommentById(params.commentId);
+    const { commentId } = await params;
+    const comment = await fetchCommentById(commentId);
     return NextResponse.json(comment);
   } catch (error) {
     logger.error('GET /api/comments/[commentId] error:', error);
@@ -38,6 +39,7 @@ export async function GET(request: Request, { params }: CommentRouteParams) {
 // Update Comment
 export async function PUT(request: Request, { params }: CommentRouteParams) {
   try {
+    const { commentId } = await params;
     const token = request.headers.get('Authorization')?.split(' ')[1];
     if (!token) {
       return NextResponse.json(
@@ -58,7 +60,7 @@ export async function PUT(request: Request, { params }: CommentRouteParams) {
     }
 
     const updatedComment = await updateExistingComment(
-      params.commentId,
+      commentId,
       validation.data,
       BigInt(userId)
     );
@@ -81,6 +83,7 @@ export async function PUT(request: Request, { params }: CommentRouteParams) {
 // Delete Comment
 export async function DELETE(request: Request, { params }: CommentRouteParams) {
   try {
+    const { commentId } = await params;
     const token = request.headers.get('Authorization')?.split(' ')[1];
     if (!token) {
       return NextResponse.json(
@@ -91,7 +94,7 @@ export async function DELETE(request: Request, { params }: CommentRouteParams) {
     const { userId } = verifyToken(token);
 
     const deletedComment = await removeComment(
-      params.commentId,
+      commentId,
       BigInt(userId)
     );
     return NextResponse.json(deletedComment, { status: HttpStatus.OK });

@@ -18,7 +18,8 @@ interface MediaRouteParams {
 // Get Media Item by ID
 export async function GET(request: Request, { params }: MediaRouteParams) {
   try {
-    const media = await fetchMediaItemById(params.mediaId);
+    const { mediaId } = await params;
+    const media = await fetchMediaItemById(mediaId);
     return NextResponse.json(media);
   } catch (error) {
     logger.error('GET /api/media/[mediaId] error:', error);
@@ -38,6 +39,7 @@ export async function GET(request: Request, { params }: MediaRouteParams) {
 // Update Media Item
 export async function PUT(request: Request, { params }: MediaRouteParams) {
   try {
+    const { mediaId } = await params;
     const token = request.headers.get('Authorization')?.split(' ')[1];
     if (!token) {
       return NextResponse.json(
@@ -58,7 +60,7 @@ export async function PUT(request: Request, { params }: MediaRouteParams) {
     }
 
     const updatedMedia = await updateExistingMediaItem(
-      params.mediaId,
+      mediaId,
       validation.data,
       BigInt(userId)
     );
@@ -81,6 +83,7 @@ export async function PUT(request: Request, { params }: MediaRouteParams) {
 // Delete Media Item
 export async function DELETE(request: Request, { params }: MediaRouteParams) {
   try {
+    const { mediaId } = await params;
     const token = request.headers.get('Authorization')?.split(' ')[1];
     if (!token) {
       return NextResponse.json(
@@ -90,7 +93,7 @@ export async function DELETE(request: Request, { params }: MediaRouteParams) {
     }
     const { userId } = verifyToken(token);
 
-    const deletedMedia = await removeMediaItem(params.mediaId, BigInt(userId));
+    const deletedMedia = await removeMediaItem(mediaId, BigInt(userId));
     return NextResponse.json(deletedMedia, { status: HttpStatus.OK });
   } catch (error) {
     logger.error('DELETE /api/media/[mediaId] error:', error);

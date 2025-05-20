@@ -16,8 +16,8 @@ interface UserRouteParams {
 // Get User by ID
 export async function GET(request: Request, { params }: UserRouteParams) {
   try {
-    // Optional: Add token verification if only authenticated users can fetch profiles
-    const user = await getUserById(BigInt(params.userId));
+    const { userId } = await params;
+    const user = await getUserById(BigInt(userId));
     if (!user) {
       return NextResponse.json(
         { message: 'User not found' },
@@ -42,6 +42,7 @@ export async function GET(request: Request, { params }: UserRouteParams) {
 // Update User
 export async function PUT(request: Request, { params }: UserRouteParams) {
   try {
+    const { userId } = await params;
     const token = request.headers.get('Authorization')?.split(' ')[1];
     if (!token) {
       return NextResponse.json(
@@ -51,7 +52,7 @@ export async function PUT(request: Request, { params }: UserRouteParams) {
     }
     const { userId: tokenUserId } = verifyToken(token);
 
-    if (params.userId !== tokenUserId) {
+    if (userId !== tokenUserId) {
       return NextResponse.json(
         { message: 'Forbidden: You can only update your own profile' },
         { status: HttpStatus.FORBIDDEN }
@@ -88,6 +89,7 @@ export async function PUT(request: Request, { params }: UserRouteParams) {
 // Delete User
 export async function DELETE(request: Request, { params }: UserRouteParams) {
   try {
+    const { userId } = await params;
     const token = request.headers.get('Authorization')?.split(' ')[1];
     if (!token) {
       return NextResponse.json(
@@ -97,7 +99,7 @@ export async function DELETE(request: Request, { params }: UserRouteParams) {
     }
     const { userId: tokenUserId } = verifyToken(token);
 
-    if (params.userId !== tokenUserId) {
+    if (userId !== tokenUserId) {
       return NextResponse.json(
         { message: 'Forbidden: You can only delete your own account' },
         { status: HttpStatus.FORBIDDEN }
